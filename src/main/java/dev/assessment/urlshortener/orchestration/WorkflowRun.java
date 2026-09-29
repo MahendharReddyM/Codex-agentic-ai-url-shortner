@@ -228,9 +228,10 @@ public final class WorkflowRun {
             Map<String, String> details) {
         version++;
         updatedAt = now;
+        long auditSequence = events.size() + 1L;
         String previousHash = events.isEmpty() ? "GENESIS" : events.get(events.size() - 1).eventHash();
-        String eventHash = hash(version, now, type, stageId, actor, message, details, previousHash);
-        events.add(new RunEvent(version, now, type, stageId, actor, message,
+        String eventHash = hash(auditSequence, now, type, stageId, actor, message, details, previousHash);
+        events.add(new RunEvent(auditSequence, now, type, stageId, actor, message,
                 Map.copyOf(details), previousHash, eventHash));
     }
 
