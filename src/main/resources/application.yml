@@ -28,3 +28,7 @@ springdoc:
 app:
   public-base-url: http://localhost:8080
   code-length: 8
+  reliability:
+    redirects-per-minute: 120
+    max-analytics-events-per-link: 10000
+    analytics-salt: ${ANALYTICS_SALT:local-development-only-change-me}
