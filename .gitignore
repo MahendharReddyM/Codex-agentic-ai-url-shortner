@@ -1,0 +1,10 @@
+target/
+work/
+outputs/
+.idea/
+.vscode/
+*.iml
+*.log
+.DS_Store
+data/
+!.mvn/wrapper/maven-wrapper.properties
