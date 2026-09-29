@@ -43,6 +43,8 @@ public final class StageExecution {
 
     void invalidate() {
         status = StageStatus.INVALIDATED;
+        attempts = 0;
+        startedAt = null;
         output = null;
         completedAt = null;
         error = null;
@@ -57,5 +59,9 @@ public final class StageExecution {
         completedAt = now;
         output = null;
     }
-}
 
+    void skip(Instant now) {
+        status = StageStatus.SKIPPED;
+        completedAt = now;
+    }
+}

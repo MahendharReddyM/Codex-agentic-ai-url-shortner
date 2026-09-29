@@ -63,9 +63,7 @@ public final class WorkflowGraph {
             if (!stages.keySet().containsAll(stage.dependencies())) {
                 throw new IllegalArgumentException("Unknown dependency for stage: " + stage.id());
             }
-            if (stage.fallbackStageId() != null && !stages.containsKey(stage.fallbackStageId())) {
-                throw new IllegalArgumentException("Unknown fallback for stage: " + stage.id());
-            }
+            // A fallback is a named, pre-approved recovery strategy rather than a normal DAG node.
         }
         assertAcyclic();
     }
@@ -93,4 +91,3 @@ public final class WorkflowGraph {
         }
     }
 }
-

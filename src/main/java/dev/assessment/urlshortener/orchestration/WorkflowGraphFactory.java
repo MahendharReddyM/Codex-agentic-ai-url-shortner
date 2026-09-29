@@ -35,10 +35,10 @@ public class WorkflowGraphFactory {
                 Set.of("security-review"), true, 1));
         stages.add(stage("implementation", "Implement scoped change", StageType.IMPLEMENTATION,
                 Set.of("design-approval"), false, 3));
-        stages.add(stage("unit-tests", "Execute unit tests", StageType.TESTING,
-                Set.of("implementation"), false, 2));
-        stages.add(stage("integration-tests", "Execute integration tests", StageType.TESTING,
-                Set.of("implementation"), false, 2));
+        stages.add(stageWithFallback("unit-tests", "Execute unit tests", StageType.TESTING,
+                Set.of("implementation"), false, 2, "manual-validation"));
+        stages.add(stageWithFallback("integration-tests", "Execute integration tests", StageType.TESTING,
+                Set.of("implementation"), false, 2, "manual-validation"));
         stages.add(stage("documentation", "Update engineering documentation", StageType.DOCUMENTATION,
                 Set.of("implementation"), false, 2));
         stages.add(stage("quality-gate", "Synchronize and validate outputs", StageType.VALIDATION,
@@ -59,5 +59,15 @@ public class WorkflowGraphFactory {
             int attempts) {
         return new StageDefinition(id, name, type, dependencies, approval, attempts, null);
     }
-}
 
+    private StageDefinition stageWithFallback(
+            String id,
+            String name,
+            StageType type,
+            Set<String> dependencies,
+            boolean approval,
+            int attempts,
+            String fallback) {
+        return new StageDefinition(id, name, type, dependencies, approval, attempts, fallback);
+    }
+}

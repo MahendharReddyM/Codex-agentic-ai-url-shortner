@@ -14,7 +14,8 @@ public class RequirementAgent extends AbstractTemplateAgent {
     @Override
     public AgentOutput execute(AgentTask task) {
         String acceptance = "Given the requested " + task.scenario().name().toLowerCase()
-                + " change, produce an observable, tested outcome for: " + task.requirement();
+                + " change, produce an observable, tested outcome for: " + task.requirement()
+                + (task.changeNotes().isEmpty() ? "" : ". Incorporated changes: " + task.changeNotes());
         return output(
                 "Requirement intent normalized and acceptance boundary identified.",
                 "acceptance-criteria.md",
@@ -25,4 +26,3 @@ public class RequirementAgent extends AbstractTemplateAgent {
                         : List.of());
     }
 }
-

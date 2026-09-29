@@ -10,6 +10,7 @@ public record RunEvent(
         String stageId,
         String actor,
         String message,
-        Map<String, String> details) {
+        Map<String, String> details,
+        String previousHash,
+        String eventHash) {
 }
-

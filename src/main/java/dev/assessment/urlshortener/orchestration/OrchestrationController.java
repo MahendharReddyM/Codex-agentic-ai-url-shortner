@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/orchestration/runs")
 public class OrchestrationController {
     private final OrchestrationService service;
+    private final OrchestrationMetricsService metricsService;
 
-    public OrchestrationController(OrchestrationService service) {
+    public OrchestrationController(OrchestrationService service, OrchestrationMetricsService metricsService) {
         this.service = service;
+        this.metricsService = metricsService;
     }
 
     @PostMapping
@@ -38,5 +40,24 @@ public class OrchestrationController {
     WorkflowRunView resume(@PathVariable String id) {
         return service.resume(id);
     }
-}
 
+    @PostMapping("/{id}/changes")
+    WorkflowRunView replan(@PathVariable String id, @Valid @RequestBody ChangeRequest request) {
+        return service.replan(id, request);
+    }
+
+    @PostMapping("/{id}/cancel")
+    WorkflowRunView cancel(@PathVariable String id, @Valid @RequestBody CancelRequest request) {
+        return service.cancel(id, request);
+    }
+
+    @GetMapping("/{id}/audit")
+    AuditTrailView audit(@PathVariable String id) {
+        return service.audit(id);
+    }
+
+    @GetMapping("/metrics")
+    OrchestrationMetrics metrics() {
+        return metricsService.snapshot();
+    }
+}
