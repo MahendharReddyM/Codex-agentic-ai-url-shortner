@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestAgent extends AbstractTemplateAgent {
+public class TestAgent extends AbstractAdvisoryAgent {
     @Override
     public StageType supports() {
         return StageType.TESTING;
@@ -14,11 +14,11 @@ public class TestAgent extends AbstractTemplateAgent {
     @Override
     public AgentOutput execute(AgentTask task) {
         return output(
-                task.stage().name() + " passed for generated prototype evidence.",
-                task.stage().id() + "-results.json",
-                "{\"stage\":\"" + task.stage().id() + "\",\"status\":\"passed\",\"failures\":0}",
+                task.stage().name() + " advisory test plan generated; no test result is claimed.",
+                task.stage().id() + "-plan.json",
+                "{\"stage\":\"" + task.stage().id() + "\",\"status\":\"planned\"}",
                 List.of("Cover happy path, boundary, rejection, concurrency, and recovery behavior"),
-                List.of("Template agent reports orchestration evidence; repository CI is the executable authority"));
+                List.of("Use /api/v1/engineering for executable build and test-report evidence"));
     }
 }
 

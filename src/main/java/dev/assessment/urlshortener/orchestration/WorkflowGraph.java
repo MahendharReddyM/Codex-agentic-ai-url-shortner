@@ -2,6 +2,7 @@ package dev.assessment.urlshortener.orchestration;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public final class WorkflowGraph {
                 throw new IllegalArgumentException("Duplicate stage id: " + stage.id());
             }
         });
-        this.stages = Map.copyOf(indexed);
+        this.stages = Collections.unmodifiableMap(new LinkedHashMap<>(indexed));
         this.entryGates = Set.copyOf(entryGates);
         this.exitGates = Set.copyOf(exitGates);
         validate();

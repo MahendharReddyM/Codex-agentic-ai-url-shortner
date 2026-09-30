@@ -174,6 +174,9 @@ public final class WorkflowRun {
         if (source.approvalRequired()) {
             throw new IllegalArgumentException("Approval stages cannot be replanning sources");
         }
+        if (executions.get(sourceStageId).status() != StageStatus.SUCCEEDED) {
+            throw new IllegalArgumentException("Replanning source must have a successful output");
+        }
         Set<String> affected = new java.util.LinkedHashSet<>();
         affected.add(sourceStageId);
         affected.addAll(graph.downstreamOf(sourceStageId));

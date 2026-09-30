@@ -103,6 +103,10 @@ public class ShortLinkService {
             Instant expiresAt) {
         ShortLink link = new ShortLink(code, destination, idempotencyKey, fingerprint, createdAt, expiresAt);
         if (!repository.createIfCodeAvailable(link)) {
+            ShortLink replay = repository.findByIdempotencyKey(idempotencyKey).orElse(null);
+            if (replay != null && fingerprint.equals(replay.requestFingerprint())) {
+                return toResponse(replay);
+            }
             throw new DomainException(HttpStatus.CONFLICT, "ALIAS_UNAVAILABLE", "Custom alias is already in use");
         }
         return toResponse(link);
@@ -154,7 +158,6 @@ public class ShortLinkService {
                 link.destination().toString(),
                 link.createdAt(),
                 link.expiresAt(),
-                link.active());
+                link.isAvailableAt(Instant.now(clock)));
     }
 }
-

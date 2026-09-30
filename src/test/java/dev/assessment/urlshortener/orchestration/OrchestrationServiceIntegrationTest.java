@@ -22,7 +22,7 @@ class OrchestrationServiceIntegrationTest {
         assertThat(run.stages().get("design-approval").status()).isEqualTo(StageStatus.WAITING_FOR_APPROVAL);
 
         run = service.approve(run.id(), new ApprovalRequest(
-                "design-approval", "engineering-owner", true, "Design and risk controls accepted"));
+                "design-approval", true, "Design and risk controls accepted"), "engineering-owner");
 
         assertThat(run.stages().get("unit-tests").status()).isEqualTo(StageStatus.SUCCEEDED);
         assertThat(run.stages().get("integration-tests").status()).isEqualTo(StageStatus.SUCCEEDED);
@@ -31,7 +31,7 @@ class OrchestrationServiceIntegrationTest {
         assertThat(run.stages().get("release-approval").status()).isEqualTo(StageStatus.WAITING_FOR_APPROVAL);
 
         run = service.approve(run.id(), new ApprovalRequest(
-                "release-approval", "release-owner", true, "Evidence accepted"));
+                "release-approval", true, "Evidence accepted"), "release-owner");
 
         assertThat(run.status()).isEqualTo(RunStatus.SUCCEEDED);
         assertThat(run.stages().get("release-ready").status()).isEqualTo(StageStatus.SUCCEEDED);
@@ -76,10 +76,10 @@ class OrchestrationServiceIntegrationTest {
     @Test
     void rejectedReleaseApprovalCompensatesImplementation() {
         WorkflowRunView run = service.start(new StartRunRequest(REQUIREMENT, ScenarioType.GREENFIELD));
-        run = service.approve(run.id(), new ApprovalRequest("design-approval", "owner", true, "approved"));
+        run = service.approve(run.id(), new ApprovalRequest("design-approval", true, "approved"), "owner");
 
         run = service.approve(run.id(), new ApprovalRequest(
-                "release-approval", "release-owner", false, "Evidence needs remediation"));
+                "release-approval", false, "Evidence needs remediation"), "release-owner");
 
         assertThat(run.status()).isEqualTo(RunStatus.ROLLED_BACK);
         assertThat(run.stages().get("implementation").status()).isEqualTo(StageStatus.ROLLED_BACK);
@@ -89,11 +89,11 @@ class OrchestrationServiceIntegrationTest {
     @Test
     void upstreamChangeInvalidatesAndReplansDependentWork() {
         WorkflowRunView run = service.start(new StartRunRequest(REQUIREMENT, ScenarioType.GREENFIELD));
-        run = service.approve(run.id(), new ApprovalRequest("design-approval", "owner", true, "approved"));
+        run = service.approve(run.id(), new ApprovalRequest("design-approval", true, "approved"), "owner");
         assertThat(run.stages().get("release-approval").status()).isEqualTo(StageStatus.WAITING_FOR_APPROVAL);
 
         run = service.replan(run.id(), new ChangeRequest(
-                "requirements", "Expiration must now default to 30 days", "product-owner"));
+                "requirements", "Expiration must now default to 30 days"), "product-owner");
 
         assertThat(run.status()).isEqualTo(RunStatus.WAITING_FOR_APPROVAL);
         assertThat(run.stages().get("requirements").attempts()).isEqualTo(1);

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RequirementAgent extends AbstractTemplateAgent {
+public class RequirementAgent extends AbstractAdvisoryAgent {
     @Override
     public StageType supports() {
         return StageType.REQUIREMENTS;

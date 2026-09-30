@@ -6,7 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ReliabilityProperties(
         int redirectsPerMinute,
         int maxAnalyticsEventsPerLink,
-        String analyticsSalt) {
+        String analyticsSalt,
+        int analyticsWorkers,
+        int analyticsQueueCapacity) {
 
     public ReliabilityProperties {
         if (redirectsPerMinute < 1) {
@@ -17,6 +19,12 @@ public record ReliabilityProperties(
         }
         if (analyticsSalt == null || analyticsSalt.isBlank()) {
             analyticsSalt = "local-development-only-change-me";
+        }
+        if (analyticsWorkers < 1 || analyticsWorkers > 32) {
+            analyticsWorkers = 2;
+        }
+        if (analyticsQueueCapacity < 1 || analyticsQueueCapacity > 1_000_000) {
+            analyticsQueueCapacity = 2_048;
         }
     }
 }

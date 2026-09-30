@@ -32,3 +32,31 @@ app:
     redirects-per-minute: 120
     max-analytics-events-per-link: 10000
     analytics-salt: ${ANALYTICS_SALT:local-development-only-change-me}
+    analytics-workers: ${ANALYTICS_WORKERS:2}
+    analytics-queue-capacity: ${ANALYTICS_QUEUE_CAPACITY:2048}
+  agentic:
+    provider: ${AGENTIC_MODEL_PROVIDER:deterministic}
+    model: ${AGENTIC_MODEL_NAME:gpt-5}
+    openai-base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+    openai-api-key: ${OPENAI_API_KEY:}
+    repository-root: ${AGENTIC_REPOSITORY_ROOT:file:.}
+    workspace-root: ${AGENTIC_WORKSPACE_ROOT:file:work/engineering-runs}
+    persistence-root: ${AGENTIC_PERSISTENCE_ROOT:file:data/engineering-runs}
+    persistence: ${AGENTIC_PERSISTENCE:file}
+    jdbc-url: ${AGENTIC_JDBC_URL:jdbc:postgresql://localhost:5432/agentic}
+    jdbc-user: ${AGENTIC_JDBC_USER:agentic}
+    jdbc-password: ${AGENTIC_JDBC_PASSWORD:}
+    model-timeout: ${AGENTIC_MODEL_TIMEOUT:45s}
+    command-timeout: ${AGENTIC_COMMAND_TIMEOUT:5m}
+    max-context-characters: ${AGENTIC_MAX_CONTEXT_CHARS:60000}
+    max-output-characters: ${AGENTIC_MAX_OUTPUT_CHARS:60000}
+    max-repository-files: ${AGENTIC_MAX_REPOSITORY_FILES:3000}
+    max-repository-bytes: ${AGENTIC_MAX_REPOSITORY_BYTES:25000000}
+    max-patch-files: ${AGENTIC_MAX_PATCH_FILES:30}
+    max-patch-bytes: ${AGENTIC_MAX_PATCH_BYTES:1000000}
+    max-attempts: ${AGENTIC_MAX_ATTEMPTS:3}
+    command-output-characters: ${AGENTIC_COMMAND_OUTPUT_CHARS:120000}
+  security:
+    submitter-password: ${AGENTIC_SUBMITTER_PASSWORD:local-submitter-only}
+    approver-password: ${AGENTIC_APPROVER_PASSWORD:local-approver-only}
+    admin-password: ${AGENTIC_ADMIN_PASSWORD:local-admin-only}

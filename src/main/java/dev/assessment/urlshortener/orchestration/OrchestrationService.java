@@ -60,13 +60,13 @@ public class OrchestrationService {
         return WorkflowRunView.from(find(id));
     }
 
-    public WorkflowRunView approve(String id, ApprovalRequest request) {
+    public WorkflowRunView approve(String id, ApprovalRequest request, String authenticatedActor) {
         WorkflowRun run = find(id);
         try {
             if (Boolean.TRUE.equals(request.approved())) {
-                run.approve(request.stageId(), request.approver(), request.comment(), now());
+                run.approve(request.stageId(), authenticatedActor, request.comment(), now());
             } else {
-                run.reject(request.stageId(), request.approver(), request.comment(), now());
+                run.reject(request.stageId(), authenticatedActor, request.comment(), now());
                 repository.save(run);
                 return WorkflowRunView.from(run);
             }
@@ -77,10 +77,10 @@ public class OrchestrationService {
         return WorkflowRunView.from(run);
     }
 
-    public WorkflowRunView replan(String id, ChangeRequest request) {
+    public WorkflowRunView replan(String id, ChangeRequest request, String authenticatedActor) {
         WorkflowRun run = find(id);
         try {
-            run.replan(request.sourceStageId(), request.changeSummary(), request.actor(), now());
+            run.replan(request.sourceStageId(), request.changeSummary(), authenticatedActor, now());
         } catch (IllegalArgumentException exception) {
             throw new DomainException(HttpStatus.BAD_REQUEST, "INVALID_REPLAN", exception.getMessage());
         }
@@ -88,10 +88,10 @@ public class OrchestrationService {
         return WorkflowRunView.from(run);
     }
 
-    public WorkflowRunView cancel(String id, CancelRequest request) {
+    public WorkflowRunView cancel(String id, CancelRequest request, String authenticatedActor) {
         WorkflowRun run = find(id);
         try {
-            run.cancel(now(), request.reason(), request.actor());
+            run.cancel(now(), request.reason(), authenticatedActor);
         } catch (IllegalStateException exception) {
             throw new DomainException(HttpStatus.CONFLICT, "RUN_NOT_CANCELLABLE", exception.getMessage());
         }

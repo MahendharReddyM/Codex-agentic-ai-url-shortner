@@ -16,7 +16,7 @@ class InMemoryFixedWindowRateLimiterTest {
     void boundsRequestsAndResetsInNextWindow() {
         MutableClock clock = new MutableClock(Instant.parse("2026-01-01T00:00:00Z"));
         InMemoryFixedWindowRateLimiter limiter = new InMemoryFixedWindowRateLimiter(
-                clock, new ReliabilityProperties(2, 100, "test-secret"));
+                clock, new ReliabilityProperties(2, 100, "test-secret", 2, 2_048));
 
         assertThat(limiter.allow("client")).isTrue();
         assertThat(limiter.allow("client")).isTrue();

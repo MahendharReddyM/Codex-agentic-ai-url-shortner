@@ -1,0 +1,90 @@
+@baseUrl = http://localhost:8080
+@submitter = submitter
+@submitterPassword = local-submitter-only
+@approver = approver
+@approverPassword = local-approver-only
+
+### Create a short link
+POST {{baseUrl}}/api/v1/links
+Content-Type: application/json
+Idempotency-Key: walkthrough-link-001
+
+{
+  "url": "https://example.com/docs",
+  "customAlias": "walkthrough-docs"
+}
+
+### Redirect and then inspect analytics
+GET {{baseUrl}}/r/walkthrough-docs
+Referer: https://interview.example/demo
+User-Agent: Assessment Demo Mobile
+
+###
+GET {{baseUrl}}/api/v1/links/walkthrough-docs/analytics
+Authorization: Basic admin local-admin-only
+
+### Start an evidence-producing brownfield engineering run
+# Copy id and planHash from the response into the variables below.
+POST {{baseUrl}}/api/v1/engineering/runs
+Authorization: Basic {{submitter}} {{submitterPassword}}
+Content-Type: application/json
+
+{
+  "requirement": "Add expiring short links with executable tests, reviewer documentation, bounded repair and rollback evidence.",
+  "scenario": "BROWNFIELD",
+  "repositoryPath": ".",
+  "baselineRevision": "WORKING_TREE"
+}
+
+### Review a run
+@runId = REPLACE_RUN_ID
+@planHash = REPLACE_PLAN_HASH
+@outcomeHash = REPLACE_OUTCOME_HASH
+
+GET {{baseUrl}}/api/v1/engineering/runs/{{runId}}
+Authorization: Basic {{submitter}} {{submitterPassword}}
+
+### Approve the exact plan as an independent approver; execution starts
+POST {{baseUrl}}/api/v1/engineering/runs/{{runId}}/approvals/change
+Authorization: Basic {{approver}} {{approverPassword}}
+Content-Type: application/json
+
+{
+  "artifactHash": "{{planHash}}",
+  "comment": "Repository map, plan, risk controls and rollback boundary reviewed."
+}
+
+### Approve the exact validated outcome; this records readiness and does not deploy
+POST {{baseUrl}}/api/v1/engineering/runs/{{runId}}/approvals/release
+Authorization: Basic {{approver}} {{approverPassword}}
+Content-Type: application/json
+
+{
+  "artifactHash": "{{outcomeHash}}",
+  "comment": "Patch, fixed build, test report hashes and security evidence reviewed."
+}
+
+### Dynamically replan an upstream requirement
+POST {{baseUrl}}/api/v1/engineering/runs/{{runId}}/changes
+Authorization: Basic {{submitter}} {{submitterPassword}}
+Content-Type: application/json
+
+{
+  "requirement": "Add expiring links with a 30-day default, explicit opt-out, executable tests and reviewer documentation.",
+  "reason": "Product owner clarified the default expiry rule."
+}
+
+### Start an ambiguous run; verify it stops before patching
+POST {{baseUrl}}/api/v1/engineering/runs
+Authorization: Basic {{submitter}} {{submitterPassword}}
+Content-Type: application/json
+
+{
+  "requirement": "Improve short-link reliability and analytics with whatever is best.",
+  "scenario": "AMBIGUOUS",
+  "repositoryPath": "."
+}
+
+### Reliability metrics from durable execution evidence
+GET {{baseUrl}}/api/v1/engineering/metrics
+Authorization: Basic {{approver}} {{approverPassword}}

@@ -3,8 +3,8 @@ package dev.assessment.urlshortener.orchestration;
 import java.util.List;
 import java.util.Map;
 
-abstract class AbstractTemplateAgent implements StageAgent {
-
+/** Shared output helper for the legacy graph-visualization API. */
+abstract class AbstractAdvisoryAgent implements StageAgent {
     protected AgentOutput output(
             String summary,
             String artifactName,
@@ -14,4 +14,3 @@ abstract class AbstractTemplateAgent implements StageAgent {
         return new AgentOutput(summary, Map.of(artifactName, artifact), decisions, risks);
     }
 }
-

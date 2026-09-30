@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ValidationAgent extends AbstractTemplateAgent {
+public class ValidationAgent extends AbstractAdvisoryAgent {
     @Override
     public StageType supports() {
         return StageType.VALIDATION;
@@ -18,11 +18,11 @@ public class ValidationAgent extends AbstractTemplateAgent {
             throw new IllegalStateException("Quality gate is missing required upstream evidence");
         }
         return output(
-                "Parallel branches synchronized and required evidence validated.",
+                "Advisory graph branches synchronized; executable validation is owned by /api/v1/engineering.",
                 "quality-gate.json",
-                "{\"tests\":\"passed\",\"documentation\":\"present\",\"policy\":\"passed\"}",
+                "{\"dependenciesJoined\":true,\"executableValidation\":\"not-performed-by-legacy-api\"}",
                 List.of("Release requires explicit owner approval"),
-                List.of("Residual risks remain documented for the approver"));
+                List.of("This compatibility API cannot establish build or test success"));
     }
 }
 

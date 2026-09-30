@@ -2,6 +2,7 @@ package dev.assessment.urlshortener.orchestration;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,8 +33,11 @@ public class OrchestrationController {
     }
 
     @PostMapping("/{id}/approvals")
-    WorkflowRunView approve(@PathVariable String id, @Valid @RequestBody ApprovalRequest request) {
-        return service.approve(id, request);
+    WorkflowRunView approve(
+            @PathVariable String id,
+            @Valid @RequestBody ApprovalRequest request,
+            Authentication authentication) {
+        return service.approve(id, request, authentication.getName());
     }
 
     @PostMapping("/{id}/resume")
@@ -42,13 +46,19 @@ public class OrchestrationController {
     }
 
     @PostMapping("/{id}/changes")
-    WorkflowRunView replan(@PathVariable String id, @Valid @RequestBody ChangeRequest request) {
-        return service.replan(id, request);
+    WorkflowRunView replan(
+            @PathVariable String id,
+            @Valid @RequestBody ChangeRequest request,
+            Authentication authentication) {
+        return service.replan(id, request, authentication.getName());
     }
 
     @PostMapping("/{id}/cancel")
-    WorkflowRunView cancel(@PathVariable String id, @Valid @RequestBody CancelRequest request) {
-        return service.cancel(id, request);
+    WorkflowRunView cancel(
+            @PathVariable String id,
+            @Valid @RequestBody CancelRequest request,
+            Authentication authentication) {
+        return service.cancel(id, request, authentication.getName());
     }
 
     @GetMapping("/{id}/audit")

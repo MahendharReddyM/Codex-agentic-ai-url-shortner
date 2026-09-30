@@ -1,6 +1,8 @@
 package dev.assessment.urlshortener;
 
 import static org.hamcrest.Matchers.endsWith;
+import static org.awaitility.Awaitility.await;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,12 +40,15 @@ class ApiIntegrationTest {
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", "https://example.com/docs"));
 
-        mvc.perform(get("/api/v1/links/integration-demo/analytics"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalClicks").value(1))
-                .andExpect(jsonPath("$['topReferrers']['news.example']").value(1));
+        await().untilAsserted(() ->
+                mvc.perform(get("/api/v1/links/integration-demo/analytics")
+                                .with(httpBasic("admin", "local-admin-only")))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.totalClicks").value(1))
+                        .andExpect(jsonPath("$['topReferrers']['news.example']").value(1)));
 
-        mvc.perform(delete("/api/v1/links/integration-demo"))
+        mvc.perform(delete("/api/v1/links/integration-demo")
+                        .with(httpBasic("admin", "local-admin-only")))
                 .andExpect(status().isNoContent());
         mvc.perform(get("/r/integration-demo"))
                 .andExpect(status().isGone());
